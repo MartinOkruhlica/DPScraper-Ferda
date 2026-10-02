@@ -61,9 +61,16 @@ with sync_playwright() as p:
                 for item in results:
                     writer.writerow([item["empfaenger"], item["sendungsnummer_href"], bestelldatum])
             time.sleep(2)
-            page.goto(orders_url, wait_until="domcontentloaded")
+            print("Going back from tracking page...")
+            page.go_back(wait_until="commit")
+            print("Back to order page:", page.url)
+            print("Going back from order page...")
+            page.go_back(wait_until="commit")
+            print("Back to order list:", page.url)
             page.wait_for_selector("li.order")
         else:
-            page.goto(orders_url, wait_until="domcontentloaded")
+            print("Going back from order page...")
+            page.go_back(wait_until="commit")
+            print("Back to order list:", page.url)
             page.wait_for_selector("li.order")
 
