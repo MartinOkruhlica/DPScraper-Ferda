@@ -13,7 +13,7 @@ with sync_playwright() as p:
     page = context.pages[0]
     html = page.content()
     order_ids = []
-
+    orders_url = page.url
     page.wait_for_selector("li.order")
     orders = page.locator("li.order")
     count = orders.count()
@@ -21,8 +21,7 @@ with sync_playwright() as p:
     for i in range(count):
         order = orders.nth(i)
         bestelldatum = order.locator(
-    "div.order-card:has-text('Bestelldatum') dd.oh-value"
-).first.inner_text()
+        "div.order-card:has-text('Bestelldatum') dd.oh-value").first.inner_text()
         order_id = order.locator(".orderNumber .oh-value").inner_text()
         checked_ids = set()
         with open("checked_orders.csv", "r", newline="", encoding="utf-8") as file:
@@ -62,9 +61,9 @@ with sync_playwright() as p:
                 for item in results:
                     writer.writerow([item["empfaenger"], item["sendungsnummer_href"], bestelldatum])
             time.sleep(2)
-            page.go_back()
-            page.go_back()
-            page.wait_for_load_state("domcontentloaded")
+            page.goto(orders_url, wait_until="domcontentloaded")
+            page.wait_for_selector("li.order")
         else:
-            page.go_back()
+            page.goto(orders_url, wait_until="domcontentloaded")
+            page.wait_for_selector("li.order")
 
